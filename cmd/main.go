@@ -28,7 +28,7 @@ func main() {
 
 	fmt.Println("Product Svc on", c.Port)
 
-	s := services.Server { 
+	s := services.Server{
 		H: h,
 	}
 

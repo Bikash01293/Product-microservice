@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"product-micro/pkg/db"
 	"product-micro/pkg/models"
@@ -18,7 +19,7 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 	product.Name = req.Name
 	product.Stock = req.Stock
 	product.Price = req.Price
-
+	fmt.Println("this is a product:", product)
 	if result := s.H.DB.Create(&product); result.Error != nil {
 		return &pb.CreateProductResponse{
 			Status: http.StatusConflict,
@@ -34,7 +35,7 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 
 func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindOneResponse, error) {
 	var product models.Product
-
+	fmt.Println("product id request to find product : ", req.Id)
 	if result := s.H.DB.First(&product, req.Id); result.Error != nil {
 		return &pb.FindOneResponse{
 			Status: http.StatusConflict,
@@ -43,41 +44,88 @@ func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindO
 	}
 
 	data := &pb.FindOneData{
-		Id: product.Id,
-		Name: product.Name,
+		Id:    product.Id,
+		Name:  product.Name,
 		Price: product.Price,
 		Stock: product.Stock,
 	}
-
+	fmt.Println("This is the data to send for findOne response: ", data)
 	return &pb.FindOneResponse{
 		Status: http.StatusOK,
-		Data: data,
+		Data:   data,
 	}, nil
 }
+
+// func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest) (*pb.DecreaseStockResponse, error) {
+// 	var product models.Product
+// 	fmt.Println("product requestid to decrease stock : ",req.Id)
+// 	result := s.H.DB.First(&product, req.Id)
+// 	if result.Error != nil {
+// 		return &pb.DecreaseStockResponse{
+// 			Status: http.StatusConflict,
+// 			Error:  result.Error.Error(),
+// 		}, nil
+// 	}
+// 	fmt.Println("the stock recieved:", product.Stock)
+
+// 	if product.Stock <= 0 {
+// 		return &pb.DecreaseStockResponse{
+// 			Status: http.StatusConflict,
+// 			Error:  "stock too low",
+// 		}, nil
+// 	}
+
+// 	var log models.StockDecreaseLog
+
+// 	fmt.Println("orderid is",req.OrderId)
+
+// 	result = s.H.DB.Where(&models.StockDecreaseLog{OrderId: req.OrderId}).First(&log)
+// 	fmt.Println("logging:",log.OrderId)
+// 	if result.Error != nil {
+// 		return &pb.DecreaseStockResponse{
+// 			Status: http.StatusConflict,
+// 			Error:  "stock already decreased",
+// 		}, nil
+// 	}
+// 	product.Stock = product.Stock - 1
+
+// 	s.H.DB.Save(&product)
+
+// 	log.OrderId = req.OrderId
+
+// 	log.ID = uint(req.Id)
+
+// 	s.H.DB.Create(&log)
+
+// 	return &pb.DecreaseStockResponse{
+// 		Status: http.StatusOK,
+// 	}, nil
+
+// }
 
 func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest) (*pb.DecreaseStockResponse, error) {
 	var product models.Product
 
 	if result := s.H.DB.First(&product, req.Id); result.Error != nil {
 		return &pb.DecreaseStockResponse{
-			Status: http.StatusConflict,
-			Error: result.Error.Error(),
+			Status: http.StatusNotFound,
+			Error:  result.Error.Error(),
 		}, nil
 	}
 
 	if product.Stock <= 0 {
 		return &pb.DecreaseStockResponse{
 			Status: http.StatusConflict,
-			Error: "stock tpp low",
+			Error:  "Stock too low",
 		}, nil
 	}
 
 	var log models.StockDecreaseLog
 
-	if result := s.H.DB.Where(&models.StockDecreaseLog{OrderId: req.OrderId}).First(&log); result.Error != nil {
+	if result := s.H.DB.Where(&models.StockDecreaseLog{OrderId: req.OrderId}).First(&log); result.Error == nil {
 		return &pb.DecreaseStockResponse{
 			Status: http.StatusConflict,
-			Error: "stock already decreased",
+			Error:  "Stock already decreased",
 		}, nil
 	}
 
@@ -86,13 +134,11 @@ func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest
 	s.H.DB.Save(&product)
 
 	log.OrderId = req.OrderId
-
-	log.Id = req.Id
+	log.ProductRefer = product.Id
 
 	s.H.DB.Create(&log)
 
 	return &pb.DecreaseStockResponse{
 		Status: http.StatusOK,
 	}, nil
-
 }
