@@ -12,7 +12,7 @@ import (
 type Server struct {
 	H db.Handler
 }
-
+//Create the product when the request is accepted.
 func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
 	var product models.Product
 
@@ -32,7 +32,7 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 		Id:     product.Id,
 	}, nil
 }
-
+//Get the product by the product id.
 func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindOneResponse, error) {
 	var product models.Product
 	fmt.Println("product id request to find product : ", req.Id)
@@ -55,54 +55,7 @@ func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindO
 		Data:   data,
 	}, nil
 }
-
-// func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest) (*pb.DecreaseStockResponse, error) {
-// 	var product models.Product
-// 	fmt.Println("product requestid to decrease stock : ",req.Id)
-// 	result := s.H.DB.First(&product, req.Id)
-// 	if result.Error != nil {
-// 		return &pb.DecreaseStockResponse{
-// 			Status: http.StatusConflict,
-// 			Error:  result.Error.Error(),
-// 		}, nil
-// 	}
-// 	fmt.Println("the stock recieved:", product.Stock)
-
-// 	if product.Stock <= 0 {
-// 		return &pb.DecreaseStockResponse{
-// 			Status: http.StatusConflict,
-// 			Error:  "stock too low",
-// 		}, nil
-// 	}
-
-// 	var log models.StockDecreaseLog
-
-// 	fmt.Println("orderid is",req.OrderId)
-
-// 	result = s.H.DB.Where(&models.StockDecreaseLog{OrderId: req.OrderId}).First(&log)
-// 	fmt.Println("logging:",log.OrderId)
-// 	if result.Error != nil {
-// 		return &pb.DecreaseStockResponse{
-// 			Status: http.StatusConflict,
-// 			Error:  "stock already decreased",
-// 		}, nil
-// 	}
-// 	product.Stock = product.Stock - 1
-
-// 	s.H.DB.Save(&product)
-
-// 	log.OrderId = req.OrderId
-
-// 	log.ID = uint(req.Id)
-
-// 	s.H.DB.Create(&log)
-
-// 	return &pb.DecreaseStockResponse{
-// 		Status: http.StatusOK,
-// 	}, nil
-
-// }
-
+//Decrease the stock by the product id when the order is placed.
 func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest) (*pb.DecreaseStockResponse, error) {
 	var product models.Product
 
@@ -140,5 +93,33 @@ func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest
 
 	return &pb.DecreaseStockResponse{
 		Status: http.StatusOK,
+	}, nil
+}
+
+func (s *Server) FindAllProduct(ctx context.Context, req *pb.FindAllProductRequest) (*pb.FindAllProductResponse, error) {
+	var product []models.Product
+	if result := s.H.DB.Find(&product); result.Error != nil {
+		return &pb.FindAllProductResponse{
+			Status: http.StatusConflict,
+			Error:  result.Error.Error(),
+		}, nil
+	}
+	data := &pb.FindOneData{}
+	data2 := &pb.FindAllProductResponse{Data: []*pb.FindOneData{}}
+	data3 := data2.Data
+	for i := 0; i < len(product); i++ {
+		data = &pb.FindOneData{
+			Id:    product[i].Id,
+			Name:  product[i].Name,
+			Price: product[i].Price,
+			Stock: product[i].Stock,
+		}
+		data3 = append(data3, data)
+	}
+	
+
+	return &pb.FindAllProductResponse{
+		Status: http.StatusOK,
+		Data:   data3,
 	}, nil
 }

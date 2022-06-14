@@ -6,6 +6,7 @@ option go_package = "./pkg/pb";
 
 service ProductService {
     rpc CreateProduct(CreateProductRequest) returns(CreateProductResponse) {}
+    rpc FindAllProduct(FindAllProductRequest) returns (FindAllProductResponse) {}
     rpc FindOne(FindOneRequest) returns (FindOneResponse) {}
     rpc DecreaseStock(DecreaseStockRequest) returns (DecreaseStockResponse) {}
 }
@@ -37,6 +38,14 @@ message FindOneResponse {
     int64 status = 1;
     string error = 2;
     FindOneData data = 3;
+}
+
+message FindAllProductRequest {}
+
+message FindAllProductResponse {
+    int64 status = 1;
+    string error = 2;
+    repeated FindOneData data = 3;
 }
 
 message DecreaseStockRequest {
