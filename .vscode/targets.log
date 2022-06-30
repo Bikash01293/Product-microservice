@@ -7,7 +7,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 
 # This program built for i386-apple-darwin11.3.0
 
-# Make data base, printed on Mon Jun 13 12:55:14 2022
+# Make data base, printed on Tue Jun 28 20:17:56 2022
 
 # Variables
 
@@ -33,6 +33,9 @@ CURDIR := /Users/bikasha/Desktop/go-progs/src/ecommerce-microservice/product-mic
 SHELL = /bin/sh
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupport":true}
+ 
+make: *** No rule to make target `all'.  Stop.
+
 # environment
 _ = /usr/bin/make
 # makefile (from `Makefile', line 1)
@@ -44,7 +47,7 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/k9/kszs3n7j1yv560ph55_v47lc0000gn/T/vscode-ipc-2af2e653-b9e2-4834-911d-ad2b568d540a.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/k9/kszs3n7j1yv560ph55_v47lc0000gn/T/vscode-ipc-dcfc76f2-277e-417c-a4d2-047e28184813.sock
 # environment
 VSCODE_CWD = /Users/bikasha/Desktop/go-progs/src/ecommerce-microservice/product-micro
 # environment
@@ -80,11 +83,11 @@ MAKEFILEPATH = $(shell /usr/bin/xcode-select -print-path 2>/dev/null || echo /De
 # environment
 VSCODE_CLI = 1
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/bikasha/Library/Application Support/Code/CachedData/da15b6fd3ef856477bf6f4fb29ba1b7af717770d
+VSCODE_CODE_CACHE_PATH = /Users/bikasha/Library/Application Support/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
 # environment
 LOGNAME = bikasha
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -104,7 +107,7 @@ USER = bikasha
 # makefile
 .DEFAULT_GOAL := proto
 # environment
-TERM_SESSION_ID = CF33DF63-9D04-484B-901F-8A00826F916D
+TERM_SESSION_ID = 04A908F5-8C84-4FA8-BA36-A8A7FA056DCE
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # default
@@ -118,7 +121,7 @@ TMPDIR = /var/folders/k9/kszs3n7j1yv560ph55_v47lc0000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/bikasha/Library/Application Support/Code/1.67.1-main.sock
+VSCODE_IPC_HOOK = /Users/bikasha/Library/Application Support/Code/1.67.2-main.sock
 # makefile
 MAKEFLAGS = Rrqp
 # environment
@@ -128,7 +131,7 @@ MFLAGS = -Rrqp
 # environment
 TERM_PROGRAM_VERSION = 444
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.1049108.1049114.D67CF384-B890-4DAE-A881-A1BF0D8B5B2D
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.1049108.1049114.94328D0A-4BAC-4B61-9B10-279512668B87
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # automatic
@@ -158,7 +161,7 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 391
+VSCODE_PID = 68302
 # variable set hash-table stats:
 # Load=74/1024=7%, Rehash=0, Collisions=2/98=2%
 
@@ -237,8 +240,6 @@ product-server:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Mon Jun 13 12:55:14 2022
+# Finished Make data base on Tue Jun 28 20:17:56 2022
 
  
-make: *** No rule to make target `all'.  Stop.
-

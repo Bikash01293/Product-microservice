@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"product-micro/pkg/db"
 	"product-micro/pkg/models"
@@ -16,10 +15,15 @@ type Server struct {
 func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
 	var product models.Product
 
-	product.Name = req.Name
-	product.Stock = req.Stock
+	product.Title = req.Title
+	product.Desc = req.Desc
+	product.Img = req.Img
+	product.Categories = req.Categories
+	product.Size = req.Size
+	product.Color = req.Color
 	product.Price = req.Price
-	fmt.Println("this is a product:", product)
+	product.Stock = req.Stock
+	// fmt.Println("this is a product:", product)
 	if result := s.H.DB.Create(&product); result.Error != nil {
 		return &pb.CreateProductResponse{
 			Status: http.StatusConflict,
@@ -35,7 +39,7 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 //Get the product by the product id.
 func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindOneResponse, error) {
 	var product models.Product
-	fmt.Println("product id request to find product : ", req.Id)
+	// fmt.Println("product id request to find product : ", req.Id)
 	if result := s.H.DB.First(&product, req.Id); result.Error != nil {
 		return &pb.FindOneResponse{
 			Status: http.StatusConflict,
@@ -45,11 +49,19 @@ func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindO
 
 	data := &pb.FindOneData{
 		Id:    product.Id,
-		Name:  product.Name,
+		Title:  product.Title,
+		Desc: product.Desc,
+		Img: product.Img,
+		Categories: product.Categories,
+		Size: product.Size,
+		Color: product.Color,
 		Price: product.Price,
 		Stock: product.Stock,
+
 	}
-	fmt.Println("This is the data to send for findOne response: ", data)
+
+
+	// fmt.Println("This is the data to send for findOne response: ", data)
 	return &pb.FindOneResponse{
 		Status: http.StatusOK,
 		Data:   data,
@@ -96,6 +108,7 @@ func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest
 	}, nil
 }
 
+//Get all the products.
 func (s *Server) FindAllProduct(ctx context.Context, req *pb.FindAllProductRequest) (*pb.FindAllProductResponse, error) {
 	var product []models.Product
 	if result := s.H.DB.Find(&product); result.Error != nil {
@@ -110,7 +123,12 @@ func (s *Server) FindAllProduct(ctx context.Context, req *pb.FindAllProductReque
 	for i := 0; i < len(product); i++ {
 		data = &pb.FindOneData{
 			Id:    product[i].Id,
-			Name:  product[i].Name,
+			Title:  product[i].Title,
+			Desc: product[i].Desc,
+			Img: product[i].Img,
+			Categories: product[i].Categories,
+			Size: product[i].Size,
+			Color: product[i].Color,
 			Price: product[i].Price,
 			Stock: product[i].Stock,
 		}
@@ -121,5 +139,90 @@ func (s *Server) FindAllProduct(ctx context.Context, req *pb.FindAllProductReque
 	return &pb.FindAllProductResponse{
 		Status: http.StatusOK,
 		Data:   data3,
+	}, nil
+}
+
+
+//Update the product by the product id.
+func (s *Server) UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.UpdateProductResponse, error) {
+	var prod models.Product
+	var productreq models.Product
+	// fmt.Println("product id request to find product : ", req.Id)
+	// fmt.Println("the request is:", req.Color)
+	productreq.Title = req.Title
+	productreq.Desc = req.Desc
+	productreq.Img = req.Img
+	productreq.Categories = req.Categories
+	productreq.Size = req.Size
+	productreq.Color = req.Color
+	productreq.Price = req.Price
+	productreq.Stock = req.Stock
+	if result := s.H.DB.Model(prod).Where(req.Id).Updates(productreq); result.Error != nil {
+		return &pb.UpdateProductResponse{
+			Status: http.StatusConflict,
+			Error:  result.Error.Error(),
+		}, nil
+	}
+
+	if findResult := s.H.DB.First(&prod, req.Id); findResult.Error != nil {
+		return &pb.UpdateProductResponse{
+			Status: http.StatusConflict,
+			Error:  findResult.Error.Error(),
+		}, nil
+	}
+
+	data := &pb.FindOneData{
+		Id:    prod.Id,
+		Title:  prod.Title,
+		Desc: prod.Desc,
+		Img: prod.Img,
+		Categories: prod.Categories,
+		Size: prod.Size,
+		Color: prod.Color,
+		Price: prod.Price,
+		Stock: prod.Stock,
+	}
+
+	// fmt.Println("This is the data to send for update product response: ", prod)
+	return &pb.UpdateProductResponse{
+		Status: http.StatusOK,
+		Data: data,
+	}, nil
+}
+
+//Delete the product by the product id.
+func (s *Server) DeleteProduct(ctx context.Context, req *pb.DeleteProductRequest) (*pb.DeleteProductResponse, error) {
+	var product models.Product
+	// fmt.Println("product id request to find product : ", req.Id)
+	if findResult := s.H.DB.First(&product, req.Id); findResult.Error != nil {
+		return &pb.DeleteProductResponse{
+			Status: http.StatusConflict,
+			Error:  findResult.Error.Error(),
+		}, nil
+	}
+
+	data := &pb.FindOneData{
+		Id:    product.Id,
+		Title:  product.Title,
+		Desc: product.Desc,
+		Img: product.Img,
+		Categories: product.Categories,
+		Size: product.Size,
+		Color: product.Color,
+		Price: product.Price,
+		Stock: product.Stock,
+	}
+
+	if result := s.H.DB.Model(product).Where(req.Id).Delete(product); result.Error != nil {
+		return &pb.DeleteProductResponse{
+			Status: http.StatusConflict,
+			Error:  result.Error.Error(),
+		}, nil
+	}
+
+	// fmt.Println("This is the data to send for delete product response: ", prod)
+	return &pb.DeleteProductResponse{
+		Status: http.StatusOK,
+		Data: data,
 	}, nil
 }
