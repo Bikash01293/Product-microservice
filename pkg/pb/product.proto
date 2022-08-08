@@ -52,7 +52,9 @@ message FindOneResponse {
     FindOneData data = 3;
 }
 
-message FindAllProductRequest {}
+message FindAllProductRequest {
+    string categories = 1;
+}
 
 message FindAllProductResponse {
     int64 status = 1;

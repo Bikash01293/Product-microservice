@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"product-micro/pkg/db"
 	"product-micro/pkg/models"
@@ -110,13 +111,25 @@ func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest
 
 //Get all the products.
 func (s *Server) FindAllProduct(ctx context.Context, req *pb.FindAllProductRequest) (*pb.FindAllProductResponse, error) {
+	qCategory := req.Categories;
+	fmt.Println(qCategory)
 	var product []models.Product
-	if result := s.H.DB.Find(&product); result.Error != nil {
-		return &pb.FindAllProductResponse{
-			Status: http.StatusConflict,
-			Error:  result.Error.Error(),
-		}, nil
+	if qCategory != "" {
+		if result := s.H.DB.Raw("SELECT * FROM products WHERE ?=ANY(categories)", qCategory).Find(&product); result.Error != nil {
+			return &pb.FindAllProductResponse{
+				Status: http.StatusConflict,
+				Error:  result.Error.Error(),
+			}, nil
+		} 
+	}else {
+		if result := s.H.DB.Find(&product); result.Error != nil {
+			return &pb.FindAllProductResponse{
+				Status: http.StatusConflict,
+				Error:  result.Error.Error(),
+			}, nil
+		}
 	}
+	fmt.Println("this is the:",product)
 	data := &pb.FindOneData{}
 	data2 := &pb.FindAllProductResponse{Data: []*pb.FindOneData{}}
 	data3 := data2.Data
